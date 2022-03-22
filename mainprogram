@@ -1,0 +1,141 @@
+
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128 
+#define SCREEN_HEIGHT 32 
+
+
+#define OLED_RESET     -1 
+#define SCREEN_ADDRESS 0x3C 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+
+unsigned long czaslos = random(7200000UL, 10800000UL);
+unsigned long aktualnyCzas = 0;
+unsigned long zapamietanyCzas = 0;
+
+
+
+void setup() {
+
+  Serial.begin(9600);
+  pinMode(12, OUTPUT);
+  pinMode(2, INPUT_PULLUP); 
+  pinMode(3, INPUT_PULLUP); 
+  pinMode(4, INPUT_PULLUP); 
+  pinMode(6, INPUT_PULLUP); 
+  randomSeed(analogRead(0));
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println(F("Hello"));
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); 
+  display.println(F("World"));
+  display.setTextSize(1);            
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.println(F("SYSTEM v2.0"));
+  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+  display.println(F(" BY KUBAA "));
+  display.display();
+  delay(2000);
+}
+ 
+
+
+void loop()
+{
+  digitalWrite(12, LOW);
+  
+  if (digitalRead(2) == LOW) {
+  display.clearDisplay();
+  display.setTextSize(1); 
+  display.setTextColor(SSD1306_WHITE);  
+  display.setCursor(0,0); 
+  display.println(F("KUBAA"));
+  display.setTextColor(SSD1306_WHITE); 
+  display.println(F("MODE:"));
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.print(F("AUTO"));
+  display.display();
+
+    while((digitalRead(2) == LOW)){
+      delay(50);
+      digitalWrite(12, HIGH);
+
+      }
+  }
+
+else if (digitalRead(3) == LOW) {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println(F("KUBAA"));
+  display.setTextColor(SSD1306_WHITE); 
+  display.println(F("MODE:"));
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.print(F("TRIGGER"));
+  display.display();
+
+    if((digitalRead(3) == LOW) && (digitalRead(6) == LOW)){
+    delay(200);
+
+    while((digitalRead(3) == LOW) && (digitalRead(6) == LOW)){
+    digitalWrite(12, HIGH);
+    }
+      }
+
+}
+
+else if (digitalRead(4) == LOW) {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println(F("KUBAA"));
+  display.setTextColor(SSD1306_WHITE); 
+  display.println(F("MODE:"));
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.print(F("RANDOM"));
+  display.display();
+
+  while (digitalRead(4) == LOW) {
+    aktualnyCzas = millis();
+
+         
+      if ((aktualnyCzas - zapamietanyCzas) >= czaslos) {
+        zapamietanyCzas = aktualnyCzas;
+        digitalWrite(12, !digitalRead(12));
+        czaslos = random(300000UL, 600000UL);
+        delay(200);
+        if(digitalRead(12) == LOW ){
+          czaslos = random(7200000UL, 10800000UL);
+        }
+}
+
+      
+      if((digitalRead(6) == LOW && digitalRead(4) == LOW)){
+        delay(200);
+        while((digitalRead(6) == LOW && digitalRead(4) == LOW)){
+          digitalWrite(12, HIGH);
+           }
+         digitalWrite(12, LOW);
+        }
+  }
+ 
+  }
+
+}
+
